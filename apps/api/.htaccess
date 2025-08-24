@@ -1,0 +1,10 @@
+PassengerEnabled on
+PassengerPython /home/hosting223936/ki/apps/api/venv/bin/python3
+PassengerAppRoot /home/hosting223936/ki/apps/api
+PassengerStartupFile wsgi.py
+
+# Redirect all API requests to FastAPI
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^api/(.*)$ wsgi.py/$1 [QSA,L]

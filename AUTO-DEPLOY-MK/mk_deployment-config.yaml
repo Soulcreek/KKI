@@ -1,4 +1,4 @@
-# Configuration for MK Auto-Deploy System
+# Configuration for KKI Auto-Deploy System
 defaults:
   verification:
     timeout: 30000
@@ -19,99 +19,80 @@ defaults:
     - "_backup*/**"
     - "_documentation/**"
     - "_deployment-system/**"
-    - ".htaccess"
 
 # Deployment targets
 # Path Logic:
-# - remoteRoot: Base FTP directory (e.g., "/11seconds.de/httpdocs")
-# - project.parts.remotePath: Subdirectory within remoteRoot for FTP (e.g., "/admin")
-# - project.parts.webPath: Web URL path for verification (e.g., "/admin")
-# - FTP Final path: remoteRoot + remotePath = "/11seconds.de/httpdocs/admin"
-# - Web Final URL: https://domain + webPath = "https://11seconds.de/admin"
+# - remoteRoot: Base FTP directory (e.g., "/httpdocs")
+# - project.parts.remotePath: Subdirectory within remoteRoot for FTP (e.g., "/ki")
+# - project.parts.webPath: Web URL path for verification (e.g., "/ki")
+# - FTP Final path: remoteRoot + remotePath = "/httpdocs/ki"
+# - Web Final URL: https://domain + webPath = "https://kombaecher.de/ki"
 #
 # Environment Variables Required:
-# - FTP_USER: FTP username (e.g., "k302164_11s")
-# - FTP_PASSWORD: FTP password
+# - FTP_USER: FTP username from .env
+# - FTP_PASSWORD: FTP password from .env
 targets:
   production:
     method: ftp
-    remoteRoot: "/httpdocs" # Fixed: Just the web root, no domain duplication
-    domain: "11seconds.de"
+    remoteRoot: "/httpdocs"
+    domain: "kombaecher.de"
     ftp:
-      host: "ftp.11seconds.de"
-      user: "${FTP_USER}"
-      password: "${FTP_PASSWORD}"
-      timeout: 30000
-
-  admin-direct:
-    method: ftp
-    remoteRoot: "/httpdocs" # Fixed: Just the web root, no domain duplication
-    # Use the admin subdomain for direct admin checks so verification targets the subdomain
-    domain: "admin.11seconds.de"
-    ftp:
-      host: "ftp.11seconds.de"
+      host: "ftp.kombaecher.de"
       user: "${FTP_USER}"
       password: "${FTP_PASSWORD}"
       timeout: 30000
 
   local:
     method: copy
-    localPath: "c:\\Users\\Marcel\\Documents\\GitHub\\11S\\httpdocs-local"
-    domain: "localhost:5000"
+    localPath: "./_local-test"
+    domain: "localhost:3021"
 
 # Projects configuration
 projects:
   web:
-    localSource: "c:\\Users\\Marcel\\Documents\\GitHub\\11S\\httpdocs"
-    localBuild: "c:\\Users\\Marcel\\Documents\\GitHub\\11S\\httpdocs"
-    buildCommand: "" # Build is already done, just upload httpdocs
+    localSource: "./apps/web"
+    localBuild: "./apps/web/out"
+    buildCommand: "cd apps/web && npm run build && npm run export"
 
     # Project parts - different sections of the project
     parts:
       default:
         include:
           - "**/*"
-        remotePath: "/" # FTP path: /11seconds.de/httpdocs/
-        webPath: "/" # Web URL: https://11seconds.de/
+        remotePath: "/ki" # FTP path: /httpdocs/ki
+        webPath: "/ki" # Web URL: https://kombaecher.de/ki
 
-      api:
+      root-app:
         include:
-          - "../admin/**"
-        remotePath: "/admin" # FTP path: /11seconds.de/httpdocs/admin
-        webPath: "/admin" # Web URL: https://11seconds.de/admin
-
-      admin:
-        include:
-          - "../admin/**"
-        remotePath: "/admin" # FTP path: /11seconds.de/httpdocs/admin
-        webPath: "/admin" # Web URL: https://11seconds.de/admin
-
-      frontend:
-        include:
-          - "*.html"
-          - "*.css"
-          - "*.js"
-          - "httpdocs/**"
-        remotePath: "/"
+          - "app.js"
+          - "package.json"  
+        remotePath: "/" # FTP path: /httpdocs (root level)
+        webPath: "/" # Web URL root level
 
     # Verification settings
     verify:
       enabled: true
       fileTemplate: "deploy-verify-{timestamp}.html"
-      urlTemplate: "https://{domain}/{file}"
+      urlTemplate: "https://{domain}{webPath}/{file}"
 
-  admin:
-    localSource: "c:\\Users\\Marcel\\Documents\\GitHub\\11S\\admin"
-    localBuild: "c:\\Users\\Marcel\\Documents\\GitHub\\11S\\admin"
-    buildCommand: ""
+  api:
+    localSource: "./apps/api"
+    localBuild: "./apps/api"
+    buildCommand: "" # Python doesn't need building
+
     parts:
       default:
         include:
-          - "**/*"
-        remotePath: "/admin" # FTP path: /11seconds.de/httpdocs/admin
-        webPath: "/admin" # Web URL: https://11seconds.de/admin
+          - "**/*.py"
+          - "**/*.txt"
+          - "**/.htaccess"
+        remotePath: "/ki/api" # FTP path: /ki/api
+        webPath: "/ki/api" # Web URL: https://kombaecher.de/ki/api
+
     verify:
-      enabled: false
+      enabled: true
+      fileTemplate: "health-check.html"
+      urlTemplate: "https://{domain}{webPath}/health"
 
   # Example configurations for other frameworks
   react-app:

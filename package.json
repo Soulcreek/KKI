@@ -1,0 +1,35 @@
+{
+  "name": "kki-ai-platform",
+  "version": "1.0.0",
+  "description": "KI-Assistent Platform with Next.js Frontend and FastAPI Backend",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "export": "next export",
+    "deploy-test": "node AUTO-DEPLOY-MK/mk_deploy-cli.js --dry-run",
+    "deploy-live": "node AUTO-DEPLOY-MK/mk_deploy-cli.js --project web --target production --parts default",
+    "deploy-local": "node AUTO-DEPLOY-MK/mk_deploy-cli.js --project web --target local --parts default"
+  },
+  "dependencies": {
+    "basic-ftp": "^5.0.3",
+    "js-yaml": "^4.1.0",
+    "node-fetch": "^2.6.7",
+    "fast-glob": "^3.3.1",
+    "commander": "^9.4.1",
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^5.0.0",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0"
+  },
+  "keywords": ["ai", "assistant", "next.js", "fastapi", "deployment"],
+  "author": "KKI Project",
+  "license": "MIT"
+}
